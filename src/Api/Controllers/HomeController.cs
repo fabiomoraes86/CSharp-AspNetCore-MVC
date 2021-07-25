@@ -23,6 +23,13 @@ namespace Api.Controllers
             return View();
         }
 
+        public IActionResult About()
+        {
+            ViewData["Message"] = "Salles web MVC App feom C# Course";
+            ViewData["Professor"] = "Nelio Alves"
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
