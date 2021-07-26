@@ -1,13 +1,9 @@
-﻿using Api.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
+using SalesWebMvc.Models.ViewModels;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Api.Controllers
+namespace SalesWebMvc.Controllers
 {
     public class HomeController : Controller
     {
@@ -20,13 +16,6 @@ namespace Api.Controllers
 
         public IActionResult Index()
         {
-            return View();
-        }
-
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Salles web MVC App feom C# Course";
-            ViewData["Professor"] = "Nelio Alves"
             return View();
         }
 
