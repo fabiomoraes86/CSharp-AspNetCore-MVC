@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SalesWebMvc.Models.Enums;
+using System;
 
 namespace SalesWebMvc.Models
 {
@@ -7,12 +8,14 @@ namespace SalesWebMvc.Models
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public double Amount { get; set; }
-        public SalesRecord Status { get; set; }
+        public SaleStatus Status { get; set; }
         public Seller Seller { get; set; }
 
-        public SalesRecord() { }
+        public SalesRecord()
+        {
+        }
 
-        public SalesRecord(int id, DateTime date, double amount, SalesRecord status, Seller seller)
+        public SalesRecord(int id, DateTime date, double amount, SaleStatus status, Seller seller)
         {
             Id = id;
             Date = date;
@@ -20,12 +23,7 @@ namespace SalesWebMvc.Models
             Status = status;
             Seller = seller;
         }
+
     }
 
-    public enum SaleStatus
-    {
-        Pending,
-        Billed,
-        Canceled
-    }
 }

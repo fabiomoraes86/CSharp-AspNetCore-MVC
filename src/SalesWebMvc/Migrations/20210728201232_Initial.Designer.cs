@@ -9,8 +9,8 @@ using SalesWebMvc.Data;
 namespace SalesWebMvc.Migrations
 {
     [DbContext(typeof(SalesWebMvcContext))]
-    [Migration("20210728181217_OtherEntities")]
-    partial class OtherEntities
+    [Migration("20210728201232_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -42,15 +42,13 @@ namespace SalesWebMvc.Migrations
 
                     b.Property<int?>("SellerId");
 
-                    b.Property<int?>("StatusId");
+                    b.Property<int>("Status");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SellerId");
 
-                    b.HasIndex("StatusId");
-
-                    b.ToTable("SalesRecords");
+                    b.ToTable("SalesRecord");
                 });
 
             modelBuilder.Entity("SalesWebMvc.Models.Seller", b =>
@@ -62,7 +60,7 @@ namespace SalesWebMvc.Migrations
 
                     b.Property<DateTime>("BirthDate");
 
-                    b.Property<int?>("DepartmentId");
+                    b.Property<int>("DepartmentId");
 
                     b.Property<string>("Email");
 
@@ -80,17 +78,14 @@ namespace SalesWebMvc.Migrations
                     b.HasOne("SalesWebMvc.Models.Seller", "Seller")
                         .WithMany("Sales")
                         .HasForeignKey("SellerId");
-
-                    b.HasOne("SalesWebMvc.Models.SalesRecord", "Status")
-                        .WithMany()
-                        .HasForeignKey("StatusId");
                 });
 
             modelBuilder.Entity("SalesWebMvc.Models.Seller", b =>
                 {
                     b.HasOne("SalesWebMvc.Models.Department", "Department")
                         .WithMany("Sellers")
-                        .HasForeignKey("DepartmentId");
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
