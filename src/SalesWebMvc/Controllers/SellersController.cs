@@ -43,24 +43,22 @@ namespace SalesWebMvc.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int? id)
+        public IActionResult DeleteView(int? id)
         {
-            if (id == null)
-                return NotFound();
-
-            var obj = _service.FindById(id.Value);
-            if(obj == null)
-                return NotFound();
-
-            return View(obj);
+           return View(_service.DeleteView(id));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
-            _service.Remove(id);
+            _service.Delete(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Details(int? id)
+        {
+            return View(_service.Details(id));
         }
 
     }
