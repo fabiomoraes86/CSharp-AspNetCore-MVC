@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SalesWebMvc.Data;
 using SalesWebMvc.Models;
+using SalesWebMvc.Models.ViewModels;
+using SalesWebMvc.Services.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +12,13 @@ namespace SalesWebMvc.Services
     public class SellerService
     {
         private readonly SalesWebMvcContext _context;
+        private readonly DepartmentService _department;
         private readonly SellerService _service;
 
-        public SellerService(SalesWebMvcContext context)
+        public SellerService(SalesWebMvcContext context, DepartmentService department)
         {
             _context = context;
+            _department = department;
         }
 
         public List<Seller> FindAll()
@@ -30,7 +34,12 @@ namespace SalesWebMvc.Services
 
         public Seller FindById(int id)
         {
-            return _context.Seller.Include(obj => obj.Department).FirstOrDefault(x => x.Id == id);
+           var sellerId = _context.Seller.Include(obj => obj.Department).FirstOrDefault(x => x.Id == id);
+
+            if (sellerId == null)
+                throw new NotFoundException($"Id not found");
+
+            return sellerId;
         }
 
         public Seller DeleteView(int? id)
@@ -63,6 +72,48 @@ namespace SalesWebMvc.Services
                 throw new NotImplementedException();
 
             return obj;
+        }
+
+        public SellerFormViewModel Edit(int? id)
+        {
+            if (id == null)
+                throw new NotFoundException("Id not found");
+
+            var obj = FindById(id.Value);
+
+            var departments = new List<Department>();
+            departments = _department.FindAll();
+
+            SellerFormViewModel viewModel = new SellerFormViewModel
+            {
+                Seller = obj,
+                Departments = departments
+            };
+
+            return viewModel;
+        }
+
+        public Seller UpdateSeller(int id, Seller obj)
+        {
+            if (id != obj.Id)
+                throw new Exception("Bad Request");
+
+            if (!_context.Seller.Any(x => x.Id == obj.Id))
+                throw new NotFoundException("Id not found");
+
+            try
+            {
+                _context.Update(obj);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new DbConcurrencyException(ex.Message);
+            }
+
+            return obj;
+
+
         }
 
     }
