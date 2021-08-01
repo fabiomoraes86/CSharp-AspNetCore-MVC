@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Api.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using SalesWebMvc.Models;
 using SalesWebMvc.Models.ViewModels;
 using SalesWebMvc.Services;
-using SalesWebMvc.Services.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace SalesWebMvc.Controllers
 {
@@ -49,7 +46,7 @@ namespace SalesWebMvc.Controllers
         [HttpPost]
         public IActionResult DeleteView(int? id)
         {
-           return View(_service.DeleteView(id));
+            return View(_service.DeleteView(id));
         }
 
         [HttpPost]
@@ -76,23 +73,20 @@ namespace SalesWebMvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Seller seller)
         {
-            try
-            {
-                _service.UpdateSeller(id, seller);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (NotFoundException)
-            {
-
-                return NotFound();
-            }
-            catch (DbConcurrencyException)
-            {
-
-                return BadRequest();
-            }
-
+            _service.UpdateSeller(id, seller);
+            return RedirectToAction(nameof(Index));
         }
+
+        //public IActionResult Error(string message)
+        //{
+        //    var viewModel = new ErrorViewModel
+        //    {
+        //        Message = message,
+        //        RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+        //    };
+
+        //    return View(viewModel);
+        //}
 
     }
 }
