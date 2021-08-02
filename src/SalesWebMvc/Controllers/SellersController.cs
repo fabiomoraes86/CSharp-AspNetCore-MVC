@@ -4,6 +4,7 @@ using SalesWebMvc.Models;
 using SalesWebMvc.Models.ViewModels;
 using SalesWebMvc.Services;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace SalesWebMvc.Controllers
 {
@@ -19,15 +20,15 @@ namespace SalesWebMvc.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_service.FindAll());
+            return  View(await _service.FindAllAsync());
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var departments = _departmentService.FindAll();
+            var departments = await _departmentService.FindAllAsync();
             var viewModel = new SellerFormViewModel
             {
                 Departments = departments
@@ -37,52 +38,52 @@ namespace SalesWebMvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Seller seller)
+        public async Task<IActionResult> Create(Seller seller)
         {
-            var departments = _departmentService.FindAll();
+            var departments = await _departmentService.FindAllAsync();
             var viewModel = new SellerFormViewModel
             {
                 Seller = seller,
                 Departments = departments
             };
 
-            _service.Insert(seller);
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        public IActionResult DeleteView(int? id)
-        {
-            return View(_service.DeleteView(id));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
-        {
-            _service.Delete(id);
+            await _service.InsertAsync(seller);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            return View(_service.Details(id));
-        }
-
-        [HttpGet]
-        public IActionResult Edit(int? id)
-        {
-            return View(_service.Edit(id));
+            return View(await _service.DeleteViewAsync(id));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Seller seller)
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _service.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int? id)
+        {
+            return View(await _service.DetailsAsync(id));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            return View(await _service.EditAsync(id));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Seller seller)
         {
             if (!ModelState.IsValid)
             {
-                var departments = _departmentService.FindAll();
+                var departments = await _departmentService.FindAllAsync();
                 var viewModel = new SellerFormViewModel
                 {
                     Seller = seller,
@@ -92,7 +93,7 @@ namespace SalesWebMvc.Controllers
             }
                 
 
-            _service.UpdateSeller(id, seller);
+            await _service.UpdateSellerAsync(id, seller);
             return RedirectToAction(nameof(Index));
         }
 

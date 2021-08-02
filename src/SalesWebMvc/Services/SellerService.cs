@@ -6,6 +6,7 @@ using SalesWebMvc.Services.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SalesWebMvc.Services
 {
@@ -13,7 +14,6 @@ namespace SalesWebMvc.Services
     {
         private readonly SalesWebMvcContext _context;
         private readonly DepartmentService _department;
-        private readonly SellerService _service;
 
         public SellerService(SalesWebMvcContext context, DepartmentService department)
         {
@@ -21,20 +21,20 @@ namespace SalesWebMvc.Services
             _department = department;
         }
 
-        public List<Seller> FindAll()
+        public async Task<List<Seller>> FindAllAsync()
         {
-            return _context.Seller.ToList();
+            return await _context.Seller.ToListAsync();
         }
 
-        public void Insert(Seller obj)
+        public async Task InsertAsync(Seller obj)
         {
             _context.Add(obj);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public Seller FindById(int id)
+        public async Task<Seller> FindByIdAsync(int id)
         {
-           var sellerId = _context.Seller.Include(obj => obj.Department).FirstOrDefault(x => x.Id == id);
+            var sellerId = await _context.Seller.Include(obj => obj.Department).FirstOrDefaultAsync(x => x.Id == id);
 
             if (sellerId == null)
                 throw new NotFoundException($"Id not found");
@@ -42,47 +42,47 @@ namespace SalesWebMvc.Services
             return sellerId;
         }
 
-        public Seller DeleteView(int? id)
+        public async Task<Seller> DeleteViewAsync(int? id)
         {
             if (id == null)
                 throw new NotImplementedException();
 
-            var obj = FindById(id.Value);
+            var obj = await FindByIdAsync(id.Value);
             if (obj == null)
                 throw new NotImplementedException();
 
             return obj;
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var obj = _context.Seller.Find(id);
+            var obj = await _context.Seller.FindAsync(id);
             _context.Seller.Remove(obj);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public Seller Details(int? id)
+        public async Task<Seller> DetailsAsync(int? id)
         {
             if (id == null)
                 throw new NotImplementedException();
 
-            var obj = FindById(id.Value);
+            var obj = await FindByIdAsync(id.Value);
             if (obj == null)
                 throw new NotImplementedException();
 
             return obj;
         }
 
-        public SellerFormViewModel Edit(int? id)
+        public async Task<SellerFormViewModel> EditAsync(int? id)
         {
             if (id == null)
                 throw new NotFoundException("Id not found");
 
-            var obj = FindById(id.Value);
+            var obj = await FindByIdAsync(id.Value);
 
             var departments = new List<Department>();
-            departments = _department.FindAll();
+            departments = await _department.FindAllAsync();
 
             SellerFormViewModel viewModel = new SellerFormViewModel
             {
@@ -93,18 +93,20 @@ namespace SalesWebMvc.Services
             return viewModel;
         }
 
-        public Seller UpdateSeller(int id, Seller obj)
+        public async Task<Seller> UpdateSellerAsync(int id, Seller obj)
         {
             if (id != obj.Id)
                 throw new Exception("Bad Request");
 
-            if (!_context.Seller.Any(x => x.Id == obj.Id))
+            bool hasAny = await _context.Seller.AnyAsync(x => x.Id == obj.Id);
+
+            if (!hasAny)
                 throw new NotFoundException("Id not found");
 
             try
             {
                 _context.Update(obj);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -112,7 +114,6 @@ namespace SalesWebMvc.Services
             }
 
             return obj;
-
 
         }
 
